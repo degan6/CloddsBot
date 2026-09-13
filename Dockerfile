@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json tsconfig.json ./
 COPY src ./src
+COPY scripts ./scripts
 
 RUN npm ci --legacy-peer-deps
 RUN npm run build
@@ -18,6 +19,7 @@ ENV CLODDS_STATE_DIR=/data
 ENV CLODDS_WORKSPACE=/data/workspace
 
 COPY package.json package-lock.json ./
+COPY scripts ./scripts
 RUN npm ci --omit=dev --legacy-peer-deps
 
 COPY --from=builder /app/dist ./dist
