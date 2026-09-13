@@ -420,6 +420,18 @@ export async function loadConfig(customPath?: string): Promise<Config> {
   // Substitute environment variables
   const config = substituteEnvVars(merged) as Config;
 
+  // Apply CLODDS_MODEL env override for the agent's primary model.
+  // Highest priority so a deployed instance can swap LLM providers (e.g. via a
+  // LiteLLM proxy) without editing the on-disk config file. The provider prefix
+  // (e.g. "anthropic/") is stripped downstream by selectAdaptiveModel.
+  if (process.env.CLODDS_MODEL?.trim()) {
+    config.agents = config.agents || {};
+    config.agents.defaults = {
+      ...config.agents.defaults,
+      model: { ...config.agents.defaults?.model, primary: process.env.CLODDS_MODEL.trim() },
+    };
+  }
+
   // Apply Discord credentials from the same environment used by the CLI entrypoint.
   // Preserve file-provided channel settings while allowing env-only setup.
   if (process.env.DISCORD_BOT_TOKEN || process.env.DISCORD_APP_ID) {
