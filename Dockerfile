@@ -23,6 +23,7 @@ COPY scripts ./scripts
 RUN npm ci --omit=dev --legacy-peer-deps
 
 COPY --from=builder /app/dist ./dist
+COPY public ./public
 
 RUN mkdir -p /data /data/workspace .transformers-cache \
   && chown -R node:node /data /app/.transformers-cache
